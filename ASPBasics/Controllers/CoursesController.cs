@@ -21,9 +21,20 @@ namespace ASPBasics.Controllers
         }
 
         // GET: Courses
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string searchString)
         {
-            return View(await _context.Course.ToListAsync());
+            var course = from m in _context.Course select m;
+
+
+            if (!String.IsNullOrEmpty(searchString))
+            {
+                course = course.Where(s => s.Name!.Contains(searchString));
+            }
+
+            return View(await course.ToListAsync());
+
+
+
         }
 
         // GET: Courses/Details/5
@@ -55,7 +66,7 @@ namespace ASPBasics.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("CourseID,Name,Professor")] Course course)
+        public async Task<IActionResult> Create([Bind("CourseID,Name,Professor,Description")] Course course)
         {
             if (ModelState.IsValid)
             {
@@ -87,7 +98,7 @@ namespace ASPBasics.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("CourseID,Name,Professor")] Course course)
+        public async Task<IActionResult> Edit(int id, [Bind("CourseID,Name,Professor,Description")] Course course)
         {
             if (id != course.CourseID)
             {
